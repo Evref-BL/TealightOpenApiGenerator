@@ -6,10 +6,29 @@ Class {
 		'description',
 		'requestBody',
 		'responses',
-		'operationId'
+		'operationId',
+		'parameters'
 	],
-	#category : #OpenAPIGenerator
+	#category : #'OpenAPIGenerator-Model'
 }
+
+{ #category : #accessing }
+OpenAPIOperationObject class >> neoJsonMapping: mapper [
+
+	mapper for: self do: [ :mapping | 
+		mapping mapInstVars: #( summary description operationId ).
+		(mapping mapInstVar: #parameters) valueSchema: #ArrayOfParameter ].
+	mapper
+		for: #ArrayOfParameter
+		customDo: [ :mapping | 
+		mapping listOfElementSchema: OpenAPIParameterObject ]
+]
+
+{ #category : #accessing }
+OpenAPIOperationObject >> addParameter: aParameterObject [
+
+	parameters add: aParameterObject
+]
 
 { #category : #accessing }
 OpenAPIOperationObject >> description [
@@ -24,6 +43,13 @@ OpenAPIOperationObject >> description: anObject [
 ]
 
 { #category : #accessing }
+OpenAPIOperationObject >> initialize [
+
+	super initialize.
+	parameters := OrderedCollection new
+]
+
+{ #category : #accessing }
 OpenAPIOperationObject >> operationId [
 
 	^ operationId
@@ -33,6 +59,18 @@ OpenAPIOperationObject >> operationId [
 OpenAPIOperationObject >> operationId: anObject [
 
 	operationId := anObject
+]
+
+{ #category : #accessing }
+OpenAPIOperationObject >> parameters [
+
+	^ parameters
+]
+
+{ #category : #accessing }
+OpenAPIOperationObject >> parameters: anObject [
+
+	parameters := anObject
 ]
 
 { #category : #accessing }

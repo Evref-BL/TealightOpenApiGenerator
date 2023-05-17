@@ -6,11 +6,26 @@ Class {
 		'info',
 		'paths'
 	],
-	#category : #OpenAPIGenerator
+	#category : #'OpenAPIGenerator-Model'
 }
 
 { #category : #accessing }
+OpenAPIObject class >> neoJsonMapping: mapper [
+
+	mapper for: self do: [ :mapping | 
+		mapping mapInstVars: #( openapi ).
+		(mapping mapInstVar: #info) valueSchema: OpenAPIInfoObject.
+		(mapping mapInstVar: #paths) valueSchema: #ArrayOfPath ].
+	mapper
+		for: #ArrayOfPath
+		customDo: [ :mapping | 
+		mapping listOfElementSchema: OpenAPIPathObject ]
+]
+
+{ #category : #accessing }
 OpenAPIObject >> addPath: aOpenAPIPathObject [
+
+	self paths add: aOpenAPIPathObject
 ]
 
 { #category : #accessing }

@@ -6,8 +6,17 @@ Class {
 		'version',
 		'description'
 	],
-	#category : #OpenAPIGenerator
+	#category : #'OpenAPIGenerator-Model'
 }
+
+{ #category : #accessing }
+OpenAPIInfoObject class >> neoJsonMapping: mapper [
+
+	mapper
+		for: self
+		do: [ :mapping | 
+		mapping mapInstVars: #( title version description ) ]
+]
 
 { #category : #accessing }
 OpenAPIInfoObject >> description [

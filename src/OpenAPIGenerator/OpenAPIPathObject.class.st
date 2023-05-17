@@ -3,10 +3,23 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'endpoint',
-		'pathItem'
+		'pathItems'
 	],
-	#category : #OpenAPIGenerator
+	#category : #'OpenAPIGenerator-Model'
 }
+
+{ #category : #accessing }
+OpenAPIPathObject class >> neoJsonMapping: mapper [
+
+	mapper for: self do: [ :mapping |
+		mapping mapInstVar: #pathItems to: #endpoint
+		 ]
+]
+
+{ #category : #accessing }
+OpenAPIPathObject >> addPathItem: aPathItem [
+	pathItems add: aPathItem 
+]
 
 { #category : #accessing }
 OpenAPIPathObject >> endpoint [
@@ -21,13 +34,20 @@ OpenAPIPathObject >> endpoint: anObject [
 ]
 
 { #category : #accessing }
-OpenAPIPathObject >> pathItem [
+OpenAPIPathObject >> initialize [
 
-	^ pathItem
+	super initialize.
+	pathItems := OrderedCollection new
 ]
 
 { #category : #accessing }
-OpenAPIPathObject >> pathItem: anObject [
+OpenAPIPathObject >> pathItems [
 
-	pathItem := anObject
+	^ pathItems
+]
+
+{ #category : #accessing }
+OpenAPIPathObject >> pathItems: anObject [
+
+	pathItems := anObject
 ]
