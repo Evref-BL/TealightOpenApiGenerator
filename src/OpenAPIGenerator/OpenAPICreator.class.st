@@ -156,6 +156,31 @@ OpenAPICreator >> buildResponseOf: aCollection for: aPragma [
 	^ response
 ]
 
+{ #category : #build }
+OpenAPICreator >> buildSchemaObjectFromClass: aClass [
+
+	| schemaObject |
+	schemaObject := OpenAPIObjectSchemaObject new.
+	aClass methods
+		select: [ :m | 
+			m pragmas anySatisfy: [ :pragma | 
+				pragma selector keywords first = #OPEN_API_variable: ] ]
+		thenDo: [ :method | 
+			| pragma |
+			pragma := method pragmas detect: [ :pp | 
+				          pp selector keywords first = #OPEN_API_variable: ].
+			schemaObject
+				propertyAt: (pragma argumentNamed: #OPEN_API_variable:)
+				put: (OpenAPISchemaObject for: (pragma argumentNamed: #type:)).
+			(schemaObject propertyAt:
+				 (pragma argumentNamed: #OPEN_API_variable:)) description:
+				method comment.
+			(schemaObject propertyAt:
+				 (pragma argumentNamed: #OPEN_API_variable:)) title:
+				(pragma argumentNamed: #OPEN_API_variable:) ].
+	^ schemaObject
+]
+
 { #category : #accessing }
 OpenAPICreator >> description [
 
@@ -169,8 +194,24 @@ OpenAPICreator >> description: anObject [
 ]
 
 { #category : #build }
-OpenAPICreator >> fillSchema: anOpenAPIArraySchemaObject of: aCollection for: aPragma [ 
-	
+OpenAPICreator >> fillArraySchema: anOpenAPIArraySchemaObject of: aCollection for: aPragma [
+
+	| typeName |
+	typeName := aPragma argumentNamed: #items: ifNone: [ ^ nil ].
+	anOpenAPIArraySchemaObject items: (self buildSchemaObjectFromClass:
+			 (self class environment at: typeName asSymbol)).
+	^ anOpenAPIArraySchemaObject
+]
+
+{ #category : #build }
+OpenAPICreator >> fillSchema: anOpenAPIArraySchemaObject of: aCollection for: aPragma [
+
+	(anOpenAPIArraySchemaObject isKindOf: OpenAPIArraySchemaObject) 
+		ifTrue: [ 
+			^ self
+				  fillArraySchema: anOpenAPIArraySchemaObject
+				  of: aCollection
+				  for: aPragma ]
 ]
 
 { #category : #'as yet unclassified' }

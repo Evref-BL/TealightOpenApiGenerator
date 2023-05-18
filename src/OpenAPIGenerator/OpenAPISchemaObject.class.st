@@ -25,3 +25,39 @@ OpenAPISchemaObject class >> neoJsonMapping: mapper [
 
 	mapper for: self do: [ :mapping | mapping mapInstVars: #( type title description ) ]
 ]
+
+{ #category : #accessing }
+OpenAPISchemaObject >> description [
+
+	^ description
+]
+
+{ #category : #accessing }
+OpenAPISchemaObject >> description: anObject [
+
+	description := anObject
+]
+
+{ #category : #accessing }
+OpenAPISchemaObject >> title [
+
+	^ title
+]
+
+{ #category : #accessing }
+OpenAPISchemaObject >> title: anObject [
+
+	title := anObject
+]
+
+{ #category : #accessing }
+OpenAPISchemaObject >> type [
+
+	^ type
+]
+
+{ #category : #accessing }
+OpenAPISchemaObject >> type: anObject [
+
+	type := anObject
+]
