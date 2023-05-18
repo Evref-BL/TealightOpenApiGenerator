@@ -15,7 +15,7 @@ OpenAPICreator >> buildDefaultServer [
 
 	| server |
 	server := OpenAPIServerObject new.
-	server url: 'localhost:' , self teapotInstance server port asString.
+	server url: 'http://localhost:' , self teapotInstance server port asString.
 	server description:
 		'A sever installed locally in the computer. Perfect to perform some quick tests'.
 	^ server
