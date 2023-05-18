@@ -59,11 +59,11 @@ OpenAPICreator >> buildPathFromRoute: aTeaRoute [
 							              << segment placeholderName;
 							              << '}' ] ]
 			              separatedBy: [ stream << '/' ] ].
-	pathObject := OpenAPIPathObject new
-		              endpoint: pathString;
-		              yourself.
-	
-	pathObject addPathItem: (self buildPathItemFor: aTeaRoute).
+	pathObject := OpenAPIPathObject new.
+
+	pathObject
+		at: pathString
+		put: (self buildPathItemFor: aTeaRoute).
 	^ pathObject
 ]
 
@@ -72,9 +72,11 @@ OpenAPICreator >> buildPathItemFor: aTeaRoute [
 
 	| pathItem |
 	pathItem := OpenAPIPathItemObject new.
-	pathItem action:
-		aTeaRoute requestMatcher methodMatcher asString asLowercase.
-	pathItem operation: (self buildOperationFrom: aTeaRoute).
+	pathItem
+		perform:
+			(aTeaRoute requestMatcher methodMatcher asString asLowercase , ':')
+				asSymbol
+		with: (self buildOperationFrom: aTeaRoute).
 
 	^ pathItem
 ]

@@ -2,8 +2,9 @@ Class {
 	#name : #OpenAPIPathItemObject,
 	#superclass : #Object,
 	#instVars : [
-		'action',
-		'operation'
+		'get',
+		'put',
+		'post'
 	],
 	#category : #'OpenAPIGenerator-Model'
 }
@@ -11,30 +12,41 @@ Class {
 { #category : #accessing }
 OpenAPIPathItemObject class >> neoJsonMapping: mapper [
 
-	mapper for: self do: [ :mapping | 
-		mapping mapInstVar: #operation to: #action ]
+	mapper for: self do: [ :mapping | mapping mapAllInstVars ]
 ]
 
 { #category : #accessing }
-OpenAPIPathItemObject >> action [
+OpenAPIPathItemObject >> get [
 
-	^ action
+	^ get
 ]
 
 { #category : #accessing }
-OpenAPIPathItemObject >> action: anObject [
+OpenAPIPathItemObject >> get: anObject [
 
-	action := anObject
+	get := anObject
 ]
 
 { #category : #accessing }
-OpenAPIPathItemObject >> operation [
+OpenAPIPathItemObject >> post [
 
-	^ operation
+	^ post
 ]
 
 { #category : #accessing }
-OpenAPIPathItemObject >> operation: anObject [
+OpenAPIPathItemObject >> post: anObject [
 
-	operation := anObject
+	post := anObject
+]
+
+{ #category : #accessing }
+OpenAPIPathItemObject >> put [
+
+	^ put
+]
+
+{ #category : #accessing }
+OpenAPIPathItemObject >> put: anObject [
+
+	put := anObject
 ]

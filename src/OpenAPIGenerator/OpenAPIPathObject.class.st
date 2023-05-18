@@ -2,7 +2,6 @@ Class {
 	#name : #OpenAPIPathObject,
 	#superclass : #Object,
 	#instVars : [
-		'endpoint',
 		'pathItems'
 	],
 	#category : #'OpenAPIGenerator-Model'
@@ -11,33 +10,29 @@ Class {
 { #category : #accessing }
 OpenAPIPathObject class >> neoJsonMapping: mapper [
 
-	mapper for: self do: [ :mapping |
-		mapping mapInstVar: #pathItems to: #endpoint
-		 ]
+	"mapper for: self do: [ :mapping | 
+		mapping mapInstVars: #( pathItems ) ]"
+
+	mapper for: self customDo: [ :mapping | 
+		mapping encoder: [ :apiPathObjects | 
+			| dic |
+			dic := Dictionary new.
+			apiPathObjects do: [ :apiPathObject | 
+				dic addAll: apiPathObject pathItems ].
+			dic ] ]
 ]
 
 { #category : #accessing }
-OpenAPIPathObject >> addPathItem: aPathItem [
-	pathItems add: aPathItem 
-]
+OpenAPIPathObject >> at: aPath put: aPathItem [
 
-{ #category : #accessing }
-OpenAPIPathObject >> endpoint [
-
-	^ endpoint
-]
-
-{ #category : #accessing }
-OpenAPIPathObject >> endpoint: anObject [
-
-	endpoint := anObject
+	pathItems at: aPath put: aPathItem
 ]
 
 { #category : #accessing }
 OpenAPIPathObject >> initialize [
 
 	super initialize.
-	pathItems := OrderedCollection new
+	pathItems := Dictionary new
 ]
 
 { #category : #accessing }
