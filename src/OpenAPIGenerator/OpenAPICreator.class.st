@@ -10,6 +10,17 @@ Class {
 	#category : #'OpenAPIGenerator-Creator'
 }
 
+{ #category : #accessing }
+OpenAPICreator >> buildDefaultServer [
+
+	| server |
+	server := OpenAPIServerObject new.
+	server url: 'localhost:' , self teapotInstance server port asString.
+	server description:
+		'A sever installed locally in the computer. Perfect to perform some quick tests'.
+	^ server
+]
+
 { #category : #'as yet unclassified' }
 OpenAPICreator >> buildMediaMapOf: aMethod for: aPragma [
 
@@ -47,6 +58,7 @@ OpenAPICreator >> buildOpenAPI [
 				              description: self description;
 				              yourself);
 		             yourself.
+	apiObject servers add: (self buildDefaultServer).
 	teapotInstance dynamicRoutes do: [ :dynamicRoute | 
 		apiObject addPath: (self buildPathFromRoute: dynamicRoute) ].
 	^ apiObject

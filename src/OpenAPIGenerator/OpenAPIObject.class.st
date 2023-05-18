@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'openapi',
 		'info',
-		'paths'
+		'paths',
+		'servers'
 	],
 	#category : #'OpenAPIGenerator-Model'
 }
@@ -13,7 +14,7 @@ Class {
 OpenAPIObject class >> neoJsonMapping: mapper [
 
 	mapper for: self do: [ :mapping | 
-		mapping mapInstVars: #( openapi ).
+		mapping mapInstVars: #( openapi servers ).
 		(mapping mapInstVar: #info) valueSchema: OpenAPIInfoObject.
 		(mapping mapInstVar: #paths) valueSchema: OpenAPIPathObject ]
 ]
@@ -38,8 +39,10 @@ OpenAPIObject >> info: anObject [
 
 { #category : #accessing }
 OpenAPIObject >> initialize [
+
 	super initialize.
 	paths := OrderedCollection new.
+	servers := OrderedCollection new
 ]
 
 { #category : #accessing }
@@ -64,4 +67,16 @@ OpenAPIObject >> paths [
 OpenAPIObject >> paths: anObject [
 
 	paths := anObject
+]
+
+{ #category : #accessing }
+OpenAPIObject >> servers [
+
+	^ servers
+]
+
+{ #category : #accessing }
+OpenAPIObject >> servers: anObject [
+
+	servers := anObject
 ]
