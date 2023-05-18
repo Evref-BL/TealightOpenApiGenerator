@@ -36,13 +36,23 @@ OpenAPICreator >> buildMediaMapOf: aMethod for: aPragma [
 { #category : #build }
 OpenAPICreator >> buildMediaTypeOf: aCompiledMethod for: aPragma [
 
-	| mediaType schema |
+	| mediaType schema schemaElement |
 	schema := aPragma argumentNamed: #schema:.
 	mediaType := OpenAPIMediaTypeObject new.
-	mediaType schema: (schema = 'array'
-			 ifTrue: [ OpenAPIArraySchemaObject new ]
-			 ifFalse: [ OpenAPIObjectSchemaObject new ]).
-	self fillSchema: mediaType schema of: aCompiledMethod for: aPragma.
+	schema = 'array'
+		ifTrue: [ 
+			schemaElement := OpenAPIArraySchemaObject new.
+			self fillSchema: schemaElement of: aCompiledMethod for: aPragma ]
+		ifFalse: [ 
+			aPragma
+				argumentNamed: #model:
+				ifNone: [ schemaElement := OpenAPIObjectSchemaObject new ].
+			schemaElement ifNil: [ 
+				schemaElement := self buildSchemaObjectFromClass:
+					                 (self class environment at:
+						                  (aPragma argumentNamed: #model:) asSymbol) ] ].
+
+	mediaType schema: schemaElement.
 	^ mediaType
 ]
 
@@ -161,7 +171,7 @@ OpenAPICreator >> buildSchemaObjectFromClass: aClass [
 
 	| schemaObject |
 	schemaObject := OpenAPIObjectSchemaObject new.
-	aClass methods
+	aClass allMethods
 		select: [ :m | 
 			m pragmas anySatisfy: [ :pragma | 
 				pragma selector keywords first = #OPEN_API_variable: ] ]
@@ -211,7 +221,7 @@ OpenAPICreator >> fillSchema: anOpenAPIArraySchemaObject of: aCollection for: aP
 			^ self
 				  fillArraySchema: anOpenAPIArraySchemaObject
 				  of: aCollection
-				  for: aPragma ]
+				  for: aPragma ].
 ]
 
 { #category : #'as yet unclassified' }
