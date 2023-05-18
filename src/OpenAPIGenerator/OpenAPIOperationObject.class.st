@@ -16,7 +16,7 @@ Class {
 OpenAPIOperationObject class >> neoJsonMapping: mapper [
 
 	mapper for: self do: [ :mapping | 
-		mapping mapInstVars: #( summary description operationId ).
+		mapping mapInstVars: #( summary description operationId responses ).
 		(mapping mapInstVar: #parameters) valueSchema: #ArrayOfParameter ].
 	mapper
 		for: #ArrayOfParameter
@@ -46,7 +46,8 @@ OpenAPIOperationObject >> description: anObject [
 OpenAPIOperationObject >> initialize [
 
 	super initialize.
-	parameters := OrderedCollection new
+	parameters := OrderedCollection new.
+	responses := Dictionary new
 ]
 
 { #category : #accessing }

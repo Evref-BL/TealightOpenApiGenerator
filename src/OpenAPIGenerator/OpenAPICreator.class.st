@@ -2,21 +2,49 @@ Class {
 	#name : #OpenAPICreator,
 	#superclass : #Object,
 	#instVars : [
-		'teapotInstance'
+		'teapotInstance',
+		'title',
+		'version',
+		'description'
 	],
 	#category : #'OpenAPIGenerator-Creator'
 }
+
+{ #category : #'as yet unclassified' }
+OpenAPICreator >> buildMediaMapOf: aMethod for: aPragma [
+
+	| mediaMap |
+	mediaMap := OpenAPIMediaMap new.
+	(self buildMediaTypeOf: aMethod for: aPragma) ifNotNil: [ :mediaType | 
+		mediaMap
+			perform: (aPragma argumentNamed: #mediaType:) , ':'
+			with: mediaType ].
+	^ mediaMap
+]
+
+{ #category : #'as yet unclassified' }
+OpenAPICreator >> buildMediaTypeOf: aCompiledMethod for: aPragma [
+
+	| mediaType schema |
+	schema := aPragma argumentNamed: #schema:.
+	mediaType := OpenAPIMediaTypeObject new.
+	mediaType schema: (schema = 'array'
+			 ifTrue: [ OpenAPIArraySchemaObject new ]
+			 ifFalse: [ OpenAPIObjectSchemaObject new ]).
+	self fillSchema: mediaType schema of: aCompiledMethod for: aPragma.
+	^ mediaType
+]
 
 { #category : #accessing }
 OpenAPICreator >> buildOpenAPI [
 
 	| apiObject |
 	apiObject := OpenAPIObject new
-		             openapi: #'3.1.0';
+		             openapi: #'3.0.0';
 		             info: (OpenAPIInfoObject new
-				              title: 'title';
-				              version: 'version';
-				              description: 'description';
+				              title: self title;
+				              version: self version;
+				              description: self description;
 				              yourself);
 		             yourself.
 	teapotInstance dynamicRoutes do: [ :dynamicRoute | 
@@ -40,6 +68,12 @@ OpenAPICreator >> buildOperationFrom: aTeaRoute [
 			(self
 				 buildPathParameterFrom: placeholder
 				 usedIn: correspondingMethod) ].
+	(correspondingMethod pragmaAt:
+		 #OPEN_API_RESPONSE:description:mediaType:schema:) ifNotNil: [ 
+		:pragma | 
+		operation responses
+			at: (pragma argumentNamed: #OPEN_API_RESPONSE:)
+			put: (self buildResponseOf: correspondingMethod for: pragma) ].
 	^ operation
 ]
 
@@ -92,6 +126,42 @@ OpenAPICreator >> buildPathParameterFrom: aTeaPlaceholder usedIn: aCollection [
 	^ parameterObject
 ]
 
+{ #category : #'as yet unclassified' }
+OpenAPICreator >> buildResponseOf: aCollection for: aPragma [
+
+	| response |
+	response := OpenAPIResponseObject new.
+	response description: (aPragma argumentNamed: #description).
+	(aPragma argumentNamed: #mediaType:) ~= #none ifTrue: [ 
+		response content: (self buildMediaMapOf: aCollection for: aPragma) ].
+	^ response
+]
+
+{ #category : #accessing }
+OpenAPICreator >> description [
+
+	^ description
+]
+
+{ #category : #accessing }
+OpenAPICreator >> description: anObject [
+
+	description := anObject
+]
+
+{ #category : #'as yet unclassified' }
+OpenAPICreator >> fillSchema: anOpenAPIArraySchemaObject of: aCollection for: aPragma [ 
+	
+]
+
+{ #category : #'as yet unclassified' }
+OpenAPICreator >> initialize [
+
+	title := 'Default API title'.
+	version := '1.0.0'.
+	description := 'I am a builder for an OpenAPI. Extends me with new value for your own api'
+]
+
 { #category : #accessing }
 OpenAPICreator >> teapotInstance [
 
@@ -102,4 +172,28 @@ OpenAPICreator >> teapotInstance [
 OpenAPICreator >> teapotInstance: anObject [
 
 	teapotInstance := anObject
+]
+
+{ #category : #accessing }
+OpenAPICreator >> title [
+
+	^ title
+]
+
+{ #category : #accessing }
+OpenAPICreator >> title: anObject [
+
+	title := anObject
+]
+
+{ #category : #accessing }
+OpenAPICreator >> version [
+
+	^ version
+]
+
+{ #category : #accessing }
+OpenAPICreator >> version: anObject [
+
+	version := anObject
 ]
