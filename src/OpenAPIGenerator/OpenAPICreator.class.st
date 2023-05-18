@@ -21,7 +21,7 @@ OpenAPICreator >> buildDefaultServer [
 	^ server
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #build }
 OpenAPICreator >> buildMediaMapOf: aMethod for: aPragma [
 
 	| mediaMap |
@@ -33,7 +33,7 @@ OpenAPICreator >> buildMediaMapOf: aMethod for: aPragma [
 	^ mediaMap
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #build }
 OpenAPICreator >> buildMediaTypeOf: aCompiledMethod for: aPragma [
 
 	| mediaType schema |
@@ -64,7 +64,7 @@ OpenAPICreator >> buildOpenAPI [
 	^ apiObject
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #build }
 OpenAPICreator >> buildOperationFrom: aTeaRoute [
 
 	| operation correspondingMethod placeholders |
@@ -80,12 +80,12 @@ OpenAPICreator >> buildOperationFrom: aTeaRoute [
 			(self
 				 buildPathParameterFrom: placeholder
 				 usedIn: correspondingMethod) ].
-	(correspondingMethod pragmaAt:
-		 #OPEN_API_RESPONSE:description:mediaType:schema:) ifNotNil: [ 
-		:pragma | 
-		operation responses
-			at: (pragma argumentNamed: #OPEN_API_RESPONSE:)
-			put: (self buildResponseOf: correspondingMethod for: pragma) ].
+	correspondingMethod pragmas
+		detect: [ :pragma | pragma selector keywords first = #OPEN_API_RESPONSE: ]
+		ifOne: [ :pragma | 
+			operation responses
+				at: (pragma argumentNamed: #OPEN_API_RESPONSE:)
+				put: (self buildResponseOf: correspondingMethod for: pragma) ].
 	^ operation
 ]
 
@@ -145,7 +145,7 @@ OpenAPICreator >> buildPathParameterFrom: aTeaPlaceholder usedIn: aMethod [
 	^ parameterObject
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #build }
 OpenAPICreator >> buildResponseOf: aCollection for: aPragma [
 
 	| response |
@@ -168,7 +168,7 @@ OpenAPICreator >> description: anObject [
 	description := anObject
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #build }
 OpenAPICreator >> fillSchema: anOpenAPIArraySchemaObject of: aCollection for: aPragma [ 
 	
 ]
