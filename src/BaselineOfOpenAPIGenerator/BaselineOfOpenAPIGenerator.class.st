@@ -1,6 +1,6 @@
 Class {
 	#name : #BaselineOfOpenAPIGenerator,
-	#superclass : #Object,
+	#superclass : #BaselineOf,
 	#category : #BaselineOfOpenAPIGenerator
 }
 
@@ -16,6 +16,10 @@ BaselineOfOpenAPIGenerator >> baseline: spec [
 
 { #category : #baselines }
 BaselineOfOpenAPIGenerator >> defineDependencies: spec [
+
+	spec
+		baseline: 'Tealight'
+		with: [ spec repository: 'github://astares/Tealight/repository' ]
 ]
 
 { #category : #baselines }
@@ -25,5 +29,7 @@ BaselineOfOpenAPIGenerator >> defineGroups: spec [
 { #category : #baselines }
 BaselineOfOpenAPIGenerator >> definePackages: spec [
 
-	spec package: 'OpenAPIGenerator'
+	spec
+		package: 'OpenAPIGenerator'
+		with: [ spec requires: #( 'Tealight' ) ]
 ]
