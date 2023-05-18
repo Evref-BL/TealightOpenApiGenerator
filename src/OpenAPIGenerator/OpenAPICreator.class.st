@@ -128,13 +128,20 @@ OpenAPICreator >> buildPathItemFor: aTeaRoute [
 ]
 
 { #category : #api }
-OpenAPICreator >> buildPathParameterFrom: aTeaPlaceholder usedIn: aCollection [
+OpenAPICreator >> buildPathParameterFrom: aTeaPlaceholder usedIn: aMethod [
 
 	| parameterObject |
 	parameterObject := OpenAPIParameterObject new.
 	parameterObject name: aTeaPlaceholder placeholderName.
 	parameterObject in1: OpenAPIParameterLocation path.
 	parameterObject required: true.
+	aMethod pragmas
+		detect: [ :pragma | 
+			(pragma argumentNamed: #OPEN_API_parameter: ifNone: [ false ])
+			= aTeaPlaceholder placeholderName ]
+		ifOne: [ :pragma | 
+			| schemaString |
+			parameterObject schema: (OpenAPISchemaObject for: (pragma argumentNamed: #schema:)) ].
 	^ parameterObject
 ]
 
