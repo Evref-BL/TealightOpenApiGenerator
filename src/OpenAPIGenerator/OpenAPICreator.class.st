@@ -150,8 +150,10 @@ OpenAPICreator >> buildPathParameterFrom: aTeaPlaceholder usedIn: aMethod [
 			(pragma argumentNamed: #OPEN_API_parameter: ifNone: [ false ])
 			= aTeaPlaceholder placeholderName ]
 		ifOne: [ :pragma | 
-			| schemaString |
-			parameterObject schema: (OpenAPISchemaObject for: (pragma argumentNamed: #schema:)) ].
+			parameterObject schema:
+				(OpenAPISchemaObject for: (pragma argumentNamed: #schema:)).
+			parameterObject description:
+				(pragma argumentNamed: #description: ifNone: [ nil ]) ].
 	^ parameterObject
 ]
 
