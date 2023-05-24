@@ -91,11 +91,14 @@ OpenAPICreator >> buildOperationFrom: aTeaRoute [
 				 buildPathParameterFrom: placeholder
 				 usedIn: correspondingMethod) ].
 	correspondingMethod pragmas
-		detect: [ :pragma | pragma selector keywords first = #OPEN_API_RESPONSE: ]
+		detect: [ :pragma | 
+		pragma selector keywords first = #OPEN_API_RESPONSE: ]
 		ifOne: [ :pragma | 
 			operation responses
 				at: (pragma argumentNamed: #OPEN_API_RESPONSE:)
 				put: (self buildResponseOf: correspondingMethod for: pragma) ].
+	(self buildQueryParametersUsedIn: correspondingMethod) do: [ 
+		:parameterObject | operation addParameter: parameterObject ].
 	^ operation
 ]
 
@@ -155,6 +158,29 @@ OpenAPICreator >> buildPathParameterFrom: aTeaPlaceholder usedIn: aMethod [
 			parameterObject description:
 				(pragma argumentNamed: #description: ifNone: [ nil ]) ].
 	^ parameterObject
+]
+
+{ #category : #api }
+OpenAPICreator >> buildQueryParametersUsedIn: aMethod [
+
+	| parametersObject |
+	parametersObject := OrderedCollection new.
+	aMethod pragmas
+		select: [ :pragma | 
+			(pragma argumentNamed: #OPEN_API_Query_parameter: ifNone: [ false ])
+			~= false ]
+		thenDo: [ :pragma | 
+			| parameterObject |
+			parameterObject := OpenAPIParameterObject new.
+			parameterObject name: (pragma argumentNamed: #OPEN_API_Query_parameter:).
+			parameterObject in1: OpenAPIParameterLocation query.
+			parameterObject required: false.
+			parameterObject schema:
+				(OpenAPISchemaObject for: (pragma argumentNamed: #schema:)).
+			parameterObject description:
+				(pragma argumentNamed: #description: ifNone: [ nil ]).
+			parametersObject add: parameterObject ].
+	^ parametersObject
 ]
 
 { #category : #build }
