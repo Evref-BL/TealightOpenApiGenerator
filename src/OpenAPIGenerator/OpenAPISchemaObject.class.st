@@ -12,11 +12,14 @@ Class {
 { #category : #'instance creation' }
 OpenAPISchemaObject class >> for: aSchemaTypeString [
 
-	aSchemaTypeString = #string ifTrue: [ 
+	aSchemaTypeString asLowercase = #string ifTrue: [ 
 		^ OpenAPIStringSchemaObject new ].
-	aSchemaTypeString = #integer ifTrue: [ 
+	aSchemaTypeString asLowercase = #integer ifTrue: [ 
 		^ OpenAPIIntegerSchemaObject new ].
-	aSchemaTypeString = #array ifTrue: [ ^ OpenAPIArraySchemaObject new ].
+	aSchemaTypeString asLowercase = #boolean ifTrue: [ 
+		^ OpenAPIBooleanSchemaObject new ].
+	aSchemaTypeString asLowercase = #array ifTrue: [ 
+		^ OpenAPIArraySchemaObject new ].
 	^ OpenAPIObjectSchemaObject new
 ]
 

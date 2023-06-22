@@ -195,10 +195,8 @@ OpenAPICreator >> buildResponseOf: aCollection for: aPragma [
 ]
 
 { #category : #build }
-OpenAPICreator >> buildSchemaObjectFromClass: aClass [
+OpenAPICreator >> buildSchemaIn: schemaObject basedOnClass: aClass [
 
-	| schemaObject |
-	schemaObject := OpenAPIObjectSchemaObject new.
 	aClass allMethods
 		select: [ :m | 
 			m pragmas anySatisfy: [ :pragma | 
@@ -215,7 +213,49 @@ OpenAPICreator >> buildSchemaObjectFromClass: aClass [
 				method comment.
 			(schemaObject propertyAt:
 				 (pragma argumentNamed: #OPEN_API_variable:)) title:
-				(pragma argumentNamed: #OPEN_API_variable:) ].
+				(pragma argumentNamed: #OPEN_API_variable:) ]
+]
+
+{ #category : #build }
+OpenAPICreator >> buildSchemaIn: schemaObject basedOnMooseClass: aClass [
+
+	aClass allMethods
+		select: [ :m | 
+			m pragmas anySatisfy: [ :pragma | 
+				pragma selector keywords first = #FMProperty: ] ]
+		thenDo: [ :method | 
+			| pragma |
+			pragma := method pragmas detect: [ :pp | 
+				          pp selector keywords first = #FMProperty: ].
+			schemaObject
+				propertyAt: (pragma argumentNamed: #FMProperty:)
+				put: (OpenAPISchemaObject for: (pragma argumentNamed: #type:)).
+
+			"comment"
+			(schemaObject propertyAt: (pragma argumentNamed: #FMProperty:)) 
+				description: (method pragmas
+						 detect: [ :pp | pp selector keywords first = #FMComment: ]
+						 ifOne: [ :comPragma | comPragma argumentNamed: #FMComment: ]
+						 ifNone: [ method comment ifNil: [ '' ] ]).
+			(schemaObject propertyAt: (pragma argumentNamed: #FMProperty:)) 
+				title: (pragma argumentNamed: #FMProperty:) ].
+	schemaObject
+		propertyAt: #mooseID
+		put: (OpenAPISchemaObject for: #integer).
+	(schemaObject propertyAt: #mooseID) description:
+		'The id of the element in the model'
+]
+
+{ #category : #build }
+OpenAPICreator >> buildSchemaObjectFromClass: aClass [
+
+	| schemaObject |
+	schemaObject := OpenAPIObjectSchemaObject new.
+	(aClass isKindOf: MooseObject class)
+		ifTrue: [ 
+		self buildSchemaIn: schemaObject basedOnMooseClass: aClass ]
+		ifFalse: [ self buildSchemaIn: schemaObject basedOnClass: aClass ].
+
 	^ schemaObject
 ]
 
